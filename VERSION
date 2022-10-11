@@ -1,0 +1,8 @@
+v2.1
+- Fixed sorting compare to key
+v2.0
+- Converted to Python 3
+v1.1
+- Fixed reinforcementTestClasses: grid object double-instantiation overwrites
+object attributes (e.g. noise)
+- Recreated test cases.
