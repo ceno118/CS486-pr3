@@ -208,6 +208,25 @@ class ApproximateQAgent(PacmanQAgent):
           where * is the dotProduct operator
         """
         "*** YOUR CODE HERE ***"
+
+        '''
+        https://github.com/YidaYin/Berkeley-CS188-Project-3/blob/master/qlearningAgents.py
+        I wasn't understanding how to use the features list to change the q value and weights, so I looked here
+        to figure out the details.
+        '''
+
+        feats = self.featExtractor.getFeatures(state, action)
+        q = 0
+        for feat in feats:
+          q += self.weights[feat] * feats[feat]
+        return q
+
+        '''Originally had:
+        weight = self.weights[(state, action)]
+        return feats * weight
+        ^^ updated that using the source above
+        '''
+
         util.raiseNotDefined()
 
     def update(self, state, action, nextState, reward):
@@ -215,7 +234,23 @@ class ApproximateQAgent(PacmanQAgent):
            Should update your weights based on transition
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+
+        curQ = self.getQValue(state, action)
+        nextQ = self.getValue(nextState)
+        diff = (self.discount * nextQ + reward) - curQ
+        feats = self.featExtractor.getFeatures(state, action)
+
+        for feat in feats:
+          self.weights[feat] += self.alpha * diff * feats[feat]
+
+        '''I used the same source as above
+        originally had:
+        self.weights[(state, action)] = self.alpha * diff * feats
+        '''
+
+
+        #util.raiseNotDefined()
 
     def final(self, state):
         "Called at the end of each game."
