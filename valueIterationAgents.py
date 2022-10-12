@@ -46,6 +46,33 @@ class ValueIterationAgent(ValueEstimationAgent):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
 
+        '''
+        I'm defining self.bestActions to hold the best action for a given state, so it can be more easily accessed later
+        '''
+
+        self.bestActions = {state:None for state in self.mdp.getStates()}
+
+        for i in range(self.iterations):
+            new_vals = util.Counter() #added based on source below
+            '''
+            https://github.com/YidaYin/Berkeley-CS188-Project-3/blob/master/valueIterationAgents.py
+            I was originally just updating self.values whenever the q was greater than the current max (lines 70-73) but this
+            wasn't working and I wasn't sure why. I found this and saw why I needed to reset the values each time using
+            a new util.Counter (new_vals). As this source is a complete solution to the project, I plan to only use it
+            if I'm completely stuck.
+            '''
+            states = self.mdp.getStates()
+            for state in states:
+                legalActions = self.mdp.getPossibleActions(state)
+                max = float("-inf")
+                for action in legalActions:
+                    q = self.computeQValueFromValues(state, action)
+                    if q > max:
+                        max = q
+                        new_vals[state] = max #used source described above to change from self.values[state] to new_vals[state]
+                        self.bestActions[state] = action
+            self.values = new_vals #added based on above source
+    
 
     def getValue(self, state):
         """
@@ -60,6 +87,13 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
+        q = 0
+        tStatesAndProbs = self.mdp.getTransitionStatesAndProbs(state, action)
+        for successor, p in tStatesAndProbs:
+            q += p * (self.mdp.getReward(state, action, successor) + self.values[successor] * self.discount)
+        return q
+
+
         util.raiseNotDefined()
 
     def computeActionFromValues(self, state):
@@ -72,6 +106,11 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
+
+        # because self.actions stores the best action for a state, we can just return from it
+
+        return self.bestActions[state]
+
         util.raiseNotDefined()
 
     def getPolicy(self, state):
